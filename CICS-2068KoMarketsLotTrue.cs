@@ -6,6 +6,7 @@ using Microsoft.VisualStudio.TestTools.UITesting;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Collections.Generic;
 using ConstsCore = Core.EnvironmentSettings.Consts;
+using Newtonsoft.Json;
 
 namespace ATProAutomation.Tests.CPT.Orders
 {
@@ -31,7 +32,7 @@ namespace ATProAutomation.Tests.CPT.Orders
         [PostSharpAspect]
         public void CICS_2068KoMarketsLotTrueTest()
         {
-            //2069
+            //2068
             application = new ATProDebugApp();
             application.StartAppWithLogin(userName, kvps: kvps);
                       
@@ -39,9 +40,15 @@ namespace ATProAutomation.Tests.CPT.Orders
             application.MarketSearchTab.SearchMarketsRadComboBox.Text = KoMarketName;
             application.MarketSearchTab.SearchButtonClick();
             var createWin = application.MarketSearchTab.Table.OpenCreateMarketOrderBuyFormCM(KoMarketName);
+            Assert.IsTrue(createWin.IsVisible);
+            Assert.AreEqual("Create Market Order", createWin.HeaderTextBlock.Text);
             Assert.IsTrue(createWin.KoLotLabel.IsVisible,
                "Error: \"1 lot = 10,000\" should be visible");
-            createWin.ClickCancelButton();
+            createWin.Maximize(); //this window can't be maximized
+            createWin.HeaderTextBlock.DoubleClick();
+            Assert.IsFalse(createWin.IsMaximized);
+            createWin.ClickSubmitButton();
+
             
         }
 
@@ -59,3 +66,4 @@ namespace ATProAutomation.Tests.CPT.Orders
         #endregion
     }
 }
+
